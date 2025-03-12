@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แผนภาพเพื่อการบริหารจัดการองค์กร</title>
+    <!-- เพิ่ม SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            background-image: url('images/bg.png');
+            background-size: cover; 
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: center;
+        }
+        .logo {
+            width: 150px;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <img src="images/logo2.png" alt="Logo" class="logo"> 
+        <h2>เข้าสู่ระบบ</h2>
+        <input type="text" id="username" placeholder="ชื่อผู้ใช้">
+        <input type="password" id="password" placeholder="รหัสผ่าน">
+        <button onclick="checkLogin()">เข้าสู่ระบบ</button>
+        <p class="error" id="error-message"></p>
+    </div>
+
+    <!-- เพิ่ม SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function checkLogin() {
+            // กำหนด Username & Password (Hardcoded)
+            const validUsername = "ird_ceo";
+            const validPassword = "ird6670";
+
+            // รับค่าจาก Input
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+
+            // ตรวจสอบข้อมูล
+            if (username === validUsername && password === validPassword) {
+                // แสดง SweetAlert เมื่อเข้าสู่ระบบสำเร็จ
+                Swal.fire({
+                    icon: 'success',
+                    title: 'เข้าสู่ระบบสำเร็จ!',
+                    text: 'คุณกำลังถูกนำทางไปยังหน้าถัดไป...',
+                    timer: 2000, // ตั้งเวลา 2 วินาที
+                    showConfirmButton: false
+                }).then(() => {
+                    // เปลี่ยนหน้าไปยัง Dashboard หลังจากแสดง SweetAlert
+                    window.location.href = "workflow_ird.html";
+                });
+            } else {
+                document.getElementById("error-message").textContent = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!";
+            }
+        }
+    </script>
+
+</body>
+</html>

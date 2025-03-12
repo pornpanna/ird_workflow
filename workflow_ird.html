@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>แผนภาพเพื่อการบริหารจัดการองค์กร</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #bbdefb);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mindmap-container {
+            background-image: url('images/background.jpg');
+
+            width: 100%;
+            height: 100vh;
+            max-width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            position: relative;
+            overflow: auto;
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+
+        .main-title {
+            text-align: center;
+            color: #4a148c;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .central-hub {
+            position: relative;
+            height: 150px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .central-logo {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .central-logo img {
+            width: 500px;
+            height: auto;
+        }
+
+        .radiating-line {
+            position: absolute;
+            background-color: rgba(74, 20, 140, 0.3);
+            z-index: 1;
+        }
+
+        .horizontal-line {
+            width: 100%;
+            height: 2px;
+            top: 50%;
+        }
+
+        .vertical-line {
+            width: 2px;
+            height: 100%;
+            left: 50%;
+        }
+
+        .diagonal-line-1 {
+            width: 2px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: rotate(45deg) translateY(-50%);
+            transform-origin: top;
+        }
+
+        .diagonal-line-2 {
+            width: 2px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: rotate(-45deg) translateY(-50%);
+            transform-origin: top;
+        }
+
+        .branch-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .branch {
+            width: 32%;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            color: white;
+            background: linear-gradient(135deg, #4a148c, #6a1b9a);
+        }
+
+
+        .branch-icon img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .branch-title {
+            font-size: 22px;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .branch-content {
+            padding: 15px;
+            background-color: white;
+        }
+
+        .branch-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .branch-item:hover {
+            transform: translateX(5px);
+        }
+
+        .branch-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .branch-item.has-subtopics {
+            padding-right: 30px;
+        }
+
+        .subtopic-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            line-height: 1;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .subtopic-toggle.active {
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .subtopics {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 20px;
+        }
+
+        .subtopics.active {
+            max-height: 800px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .subtopic-item {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.9;
+            border-left: 3px solid rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .subtopic-item:hover {
+            transform: translateX(3px);
+        }
+
+        /* Color Schemes */
+        .blue-branch .branch-header {
+            background: linear-gradient(135deg, #0288d1, #039be5);
+        }
+
+        .blue-branch .branch-item {
+            background-color: #e1f5fe;
+            color: #0277bd;
+        }
+
+        .blue-branch .subtopic-item {
+            background-color: #f5fcff;
+            color: #0277bd;
+            border-left-color: #0288d1;
+        }
+
+        .green-branch .branch-header {
+            background: linear-gradient(135deg, #388e3c, #43a047);
+        }
+
+        .green-branch .branch-item {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .green-branch .subtopic-item {
+            background-color: #f4faf5;
+            color: #2e7d32;
+            border-left-color: #388e3c;
+        }
+
+        .orange-branch .branch-header {
+            background: linear-gradient(135deg, #f57c00, #fb8c00);
+        }
+
+        .orange-branch .branch-item {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .orange-branch .subtopic-item {
+            background-color: #fffaf0;
+            color: #ef6c00;
+            border-left-color: #f57c00;
+        }
+
+        .purple-branch .branch-header {
+            background: linear-gradient(135deg, #7b1fa2, #8e24aa);
+        }
+
+        .purple-branch .branch-item {
+            background-color: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .purple-branch .subtopic-item {
+            background-color: #faf5fb;
+            color: #6a1b9a;
+            border-left-color: #7b1fa2;
+        }
+
+        .red-branch .branch-header {
+            background: linear-gradient(135deg, #e53935, #f44336);
+        }
+
+        .red-branch .branch-item {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .red-branch .subtopic-item {
+            background-color: #fff5f6;
+            color: #c62828;
+            border-left-color: #e53935;
+        }
+
+        .teal-branch .branch-header {
+            background: linear-gradient(135deg, #00796b, #00897b);
+        }
+
+        .teal-branch .branch-item {
+            background-color: #e0f2f1;
+            color: #00695c;
+        }
+
+        .teal-branch .subtopic-item {
+            background-color: #f2f9f9;
+            color: #00695c;
+            border-left-color: #00796b;
+        }
+
+        /* ย้ายปุ่มซูมไปด้านบนขวา */
+        .zoom-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4a148c;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .zoom-btn:hover {
+            transform: scale(1.1);
+            background-color: #6a1b9a;
+        }
+
+        .zoom-text {
+            width: 60px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ปรับแต่งสำหรับหน้าจอขนาดเล็ก */
+        @media (max-width: 768px) {
+            .branch {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .main-title {
+                font-size: 28px;
+            }
+
+            .branch-title {
+                font-size: 22px;
+            }
+
+            .branch-item {
+                font-size: 16px;
+            }
+
+            .subtopic-item {
+                font-size: 14px;
+            }
+        }
+
+        .branch-link {
+            text-decoration: none;
+            /* ลบขีดเส้นใต้ของลิงก์ */
+            color: inherit;
+            /* สืบทอดสีจาก parent */
+            display: block;
+
+            /* เพิ่ม padding เพื่อให้คลิกได้ง่าย */
+            border-radius: 8px;
+            /* ปรับมุมโค้งให้สวยงาม */
+            transition: background-color 0.2s ease;
+            /* เพิ่มเอฟเฟกต์เมื่อ hover */
+        }
+
+        .branch-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+        }
+          /* เพิ่มสไตล์สำหรับปุ่มออกจากระบบ */
+          .logout-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #dc3545; /* สีแดง */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            z-index: 1000;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333; /* สีแดงเข้มเมื่อโฮเวอร์ */
+        }
+    </style>
+</head>
+
+<body>
+       <!-- เพิ่มปุ่มออกจากระบบ -->
+       <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
+    <div class="mindmap-container" id="mindmap">
+        
+        <h1 class="main-title">แผนภาพเพื่อการบริหารจัดการองค์กร<br>สถาบันวิจัยและพัฒนา มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน
+        </h1>
+
+        <div class="central-hub">
+            <div class="radiating-line horizontal-line"></div>
+            <div class="radiating-line vertical-line"></div>
+            <div class="radiating-line diagonal-line-1"></div>
+            <div class="radiating-line diagonal-line-2"></div>
+
+            <div class="central-logo">
+                <img src="images/logo.png" alt="สถาบันวิจัยและพัฒนา">
+            </div>
+        </div>
+
+        <div class="branch-container">
+            <!-- งานบริหารงานทั่วไป -->
+            <div class="branch blue-branch">
+                <div class="branch-header">
+                    <div class="branch-icon">
+                        <img src="images/งานบริหารทั่วไป3.png" alt="icon">
+                    </div>
+                    <div class="branch-title">งานบริหารงานทั่วไป</div>
+                </div>
+                <div class="branch-content">
+                    <div class="branch-item has-subtopics">
+                        ศูนย์วิจัยและพัฒนาสมุนไพรและพืชเศรษฐกิจใหม่เพื่อสุขภาพ
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">งบประมาณแผ่นดิน</div>
+
+                        </div>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                     <a href="https://lookerstudio.google.com/embed/reporting/74c49337-c8aa-4575-b2c8-58902b859a7a/page/p_me47hb17od"  target="_blank" class="branch-link">ศูนย์เครื่องมือวิจัย มทร.อีสาน</a>   
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">เอกสาร-จัดทำข้อมูล</div>
+                            <div class="subtopic-item">ฝึกอบรมการใช้เครื่องมือ</div>
+                            <div class="subtopic-item">ทดสอบตัวอย่าง</div>
+                        </div>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        แผนกงานนโยบายและยุทธศาสตร์การบริหาร
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item"><a href="https://lookerstudio.google.com/embed/reporting/a2184e88-eb3b-40be-881f-676cb9b84fa0/page/gFPEE"  target="_blank" class="branch-link">ส่วนแผนงบประมาณ</a></div>
+                            <div class="subtopic-item">ส่วนกองทุนสนับสนุนการวิจัย , เบิกจ่ายกองทุน , สรุปบัญชีกองทุน
+                            </div>
+                            <div class="subtopic-item">ส่วนประกันคุณภาพ , (ITA)คุณธรรมและความโปร่งใส,
+                                ความเสี่ยงและควบคุมภายใน</div>
+                        </div>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        แผนกงานธุรการสถาบัน
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item"><a href="https://lookerstudio.google.com/embed/reporting/9d192799-dded-4802-bec3-1c27c31b3740/page/TYc0D"   target="_blank" class="branch-link">ส่วนสารบรรณระดับหน่วยงาน</a></div>
+                            <div class="subtopic-item"><a href="https://lookerstudio.google.com/embed/reporting/a86278ff-02fc-43f6-bb71-4d472a90fec3/page/p_gszteu3dqd"    target="_blank" class="branch-link">บุคคลากร</a></div>
+                            <div class="subtopic-item"><a href="https://lookerstudio.google.com/reporting/26186ddf-81fd-4575-997c-37c23b208ee9/page/4KtlE"  target="_blank" class="branch-link">ส่วนเลขานุการ</a></div>
+                            <div class="subtopic-item"><a href="https://lookerstudio.google.com/embed/reporting/d5c84113-5306-44d1-be61-8fb647905db2/page/vbc5E"  target="_blank" class="branch-link">ส่วนพัสดุและครุภัณฑ์,การเงิน</a></div>
+                            <div class="subtopic-item">ส่วนอาคารสถานที่</div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- ยุทธศาสตร์ -->
+            <div class="branch green-branch">
+                <div class="branch-header">
+                    <div class="branch-icon">
+                        
+                        <img src="images/ยุทธศาสตร์3.png" alt="icon">
+                    </div>
+                    <div class="branch-title">
+                        <a href="https://app.powerbi.com/view?r=eyJrIjoiZWE2NDM3Y2EtZDkzOC00MTlmLWE1OTYtYTVmM2I1NDFlOTU4IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
+                        target="_blank" class="branch-link">ยุทธศาสตร์ </a></div>
+                </div>
+                <div class="branch-content">
+                    <div class="branch-item has-subtopics">
+                        <a href="https://app.powerbi.com/view?r=eyJrIjoiZWE2NDM3Y2EtZDkzOC00MTlmLWE1OTYtYTVmM2I1NDFlOTU4IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
+                            target="_blank" class="branch-link">
+                            ส่งเสริมศักยภาพนักวิจัยด้วยนวัตกรรมเชิงบูรนาการ
+                        </a>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        <a href="https://app.powerbi.com/view?r=eyJrIjoiZWE2NDM3Y2EtZDkzOC00MTlmLWE1OTYtYTVmM2I1NDFlOTU4IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
+                            target="_blank" class="branch-link">
+                            พัฒนาบุคลากรด้านการวิจัยเพื่อให้เกิดความยั่งยืน
+                        </a>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        <a href="https://app.powerbi.com/view?r=eyJrIjoiZWE2NDM3Y2EtZDkzOC00MTlmLWE1OTYtYTVmM2I1NDFlOTU4IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
+                            target="_blank" class="branch-link">
+                            บริหารจัดการระบบเทคโนโลยีสารสนเทศ และเครือข่ายเชิงรุก เพื่อบริหารและงบประมาณ
+                        </a>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        <a href="https://app.powerbi.com/view?r=eyJrIjoiZWE2NDM3Y2EtZDkzOC00MTlmLWE1OTYtYTVmM2I1NDFlOTU4IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
+                            target="_blank" class="branch-link">
+                            สร้างระบบนิเวศทางการวิจัย
+                        </a>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        <a href="https://app.powerbi.com/view?r=eyJrIjoiZWE2NDM3Y2EtZDkzOC00MTlmLWE1OTYtYTVmM2I1NDFlOTU4IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
+                            target="_blank" class="branch-link">
+                            พัฒนานวัตกรรมสู่วานิชย์
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- งานวิจัยและพัฒนา -->
+            <div class="branch orange-branch">
+                <div class="branch-header">
+                    <div class="branch-icon">
+                        <img src="images/งานวิจัยและพัฒนา3.png" alt="icon">
+                    </div>
+                    <div class="branch-title">งานวิจัยและพัฒนา</div>
+                </div>
+                <div class="branch-content">
+                    <div class="branch-item has-subtopics">
+                    <a href="https://app.powerbi.com/view?r=eyJrIjoiOWFhYzIxMzYtZjVkMC00YzQ2LWFjYzgtMGEzY2Q1ZTczNDA4IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D&amp;pageName=c937317a7466657f4480"  target="_blank" class="branch-link">
+                        แผนกงานบริหารจัดการงานวิจัยและประเมินผล
+                    </a>    
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">งานทุนสนับสนุนงานพื้นฐาน (Fundamental Fund)</div>
+                            <div class="subtopic-item">งานทุน Strategic fund / ทุนภายนอก</div>
+                            <div class="subtopic-item">งานพัฒนาข้อเสนอทุนวิจัย </div>
+
+                        </div>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        แผนกงานบริหารจัดการงานวิจัยและประเมินผล
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">จริยธรรมการวิจัยในมนุษย์</div>
+                            <div class="subtopic-item">จริยธรรมการวิจัยในสัตว์ทดลองเพื่องานทางวิทยาศาสตร์
+                            </div>
+                            <div class="subtopic-item">จริยธรรมการวิจัยด้านความปลอดภัยทางชีวภาพ
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        แผนกงานข้อมูลและสารสนเทศ
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">งานวารสาร </div>
+                            <div class="subtopic-item">งานที่เกี่ยวข้องกับการแสดงข้อมูลทั้งหมด </div>
+                            <div class="subtopic-item">งานเทคโนโลยีสารสนเทศ </div>
+                            <div class="subtopic-item">งานประชาสัมพันธ์และการสื่อสารองค์กร </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- งานบริการวิชาการ -->
+            <div class="branch purple-branch">
+                <div class="branch-header">
+                    <div class="branch-icon">
+                        <img src="images/งานบริการวิชาการ3.png" alt="icon">
+                    </div>
+                    <div class="branch-title">งานบริการวิชาการ</div>
+                </div>
+                <div class="branch-content">
+                    <div class="branch-item has-subtopics">
+                       <a href="https://app.powerbi.com/view?r=eyJrIjoiZDQ0YTc0YTgtMzllNi00MzEzLTgyOGMtMjYxOWJhY2MzMTc5IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"    target="_blank" class="branch-link">แผนกงานบริการวิชาการ</a> 
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">งานสารบรรณระดับงาน , งานฝึกอบรม</div>
+                            <div class="subtopic-item">งานนิทรรศการ </div>
+                            <div class="subtopic-item"><a href="https://lookerstudio.google.com/embed/reporting/f0ace3f9-2a21-4fbc-9f39-982e596fb7d6/page/p_yx5kes5znd"     target="_blank" class="branch-link">โครงการพัทธกิจ</a></div>
+                        </div>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                        แผนกงานถ่ายทอดเทคโนโลยี
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">งารคลินิกเทคโนโลยี</div>
+                            <div class="subtopic-item">งานชุมชนนวัตกรรม</div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- งานทรัพย์สินทางปัญญา -->
+            <div class="branch red-branch">
+                <div class="branch-header">
+                    <div class="branch-icon">
+                        <img src="images/ทรัพย์สินทางปัญญา3.png" alt="icon">
+                    </div>
+                    <div class="branch-title">  <a href="https://app.powerbi.com/view?r=eyJrIjoiNWYwM2UxYjktZTliNC00NWIwLWI0OTAtOTJmNTRkM2U4YmZkIiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"    target="_blank" class="branch-link">งานทรัพย์สินทางปัญญา</a></div>
+                </div>
+                <div class="branch-content">
+                    <div class="branch-item has-subtopics">
+                       <a href="https://ird.rmuti.ac.th/home/%e0%b8%a8%e0%b8%99%e0%b8%a2%e0%b8%84%e0%b8%a7%e0%b8%b2%e0%b8%a1%e0%b9%80%e0%b8%9b%e0%b8%99%e0%b9%80%e0%b8%a5%e0%b8%a8%e0%b8%94%e0%b8%b2%e0%b8%99%e0%b8%97%e0%b8%a3%e0%b8%9e%e0%b8%a2%e0%b8%aa%e0%b8%99/" target="_blank" class="branch-link">
+                        ศูนย์ความเป็นเลิศทางทรัพย์สินทางปัญญา(TLO)
+                       </a>
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">งานอนุญาตให้ใช้สิทธิ์ , งานประเมินมูลค่า</div>
+                            <div class="subtopic-item">งานพัฒนาต้นแบบเทคโนโลยี</div>
+
+                        </div>
+                    </div>
+                    <div class="branch-item has-subtopics">
+                       <a href="https://app.powerbi.com/view?r=eyJrIjoiNWYwM2UxYjktZTliNC00NWIwLWI0OTAtOTJmNTRkM2U4YmZkIiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D" target="_blank" class="branch-link"> แผนกงานทรัพย์สินทางปัญญา</a>
+                        <div class="subtopic-toggle">+</div>
+                        <div class="subtopics">
+                            <div class="subtopic-item">งานสารบรรณระดับงาน , งานให้คำปรึกษา</div>
+                            <div class="subtopic-item">งานส่งเสริมและคุ้มครองทรัพย์สินทางปัญญา</div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ย้ายปุ่มควบคุมการย่อขยาย (zoom) ไปด้านบนขวา -->
+    <div class="zoom-controls">
+        <div class="zoom-btn zoom-out">−</div>
+        <div class="zoom-text">100%</div>
+        <div class="zoom-btn zoom-in">+</div>
+        <div class="zoom-btn zoom-reset">↺</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ฟังก์ชัน subtopics
+            const toggles = document.querySelectorAll('.subtopic-toggle');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', function () {
+                    const subtopics = this.nextElementSibling;
+                    this.classList.toggle('active');
+                    subtopics.classList.toggle('active');
+                });
+            });
+
+            // ฟังก์ชัน zoom ปรับปรุงให้ซูมจากตรงกลาง
+            const mindmap = document.getElementById('mindmap');
+            const zoomInBtn = document.querySelector('.zoom-in');
+            const zoomOutBtn = document.querySelector('.zoom-out');
+            const zoomResetBtn = document.querySelector('.zoom-reset');
+            const zoomText = document.querySelector('.zoom-text');
+
+            let currentZoom = 1; // 100%
+            const zoomStep = 0.1;
+            const minZoom = 0.5;
+            const maxZoom = 2;
+
+            // เก็บค่าการเลื่อน scroll เริ่มต้น
+            let scrollPosition = { x: 0, y: 0 };
+
+            // อัพเดทการแสดงผล zoom และรักษาตำแหน่งกลาง
+            function updateZoomDisplay() {
+                zoomText.textContent = Math.round(currentZoom * 100) + '%';
+
+                // เก็บข้อมูลตำแหน่ง scroll ก่อนซูม
+                const containerWidth = mindmap.clientWidth;
+                const containerHeight = mindmap.clientHeight;
+                const scrollLeft = mindmap.scrollLeft;
+                const scrollTop = mindmap.scrollTop;
+
+                // คำนวณจุดศูนย์กลางของมุมมองปัจจุบัน
+                const centerX = scrollLeft + containerWidth / 2;
+                const centerY = scrollTop + containerHeight / 2;
+
+                // ปรับสเกล
+                mindmap.style.transform = `scale(${currentZoom})`;
+
+                // คำนวณตำแหน่ง scroll ใหม่เพื่อให้ศูนย์กลางยังคงอยู่ที่เดิม
+                mindmap.scrollTo({
+                    left: centerX * currentZoom - containerWidth / 2,
+                    top: centerY * currentZoom - containerHeight / 2
+                });
+            }
+
+            // ปุ่มขยาย
+            zoomInBtn.addEventListener('click', function () {
+                if (currentZoom < maxZoom) {
+                    currentZoom += zoomStep;
+                    updateZoomDisplay();
+                }
+            });
+
+            // ปุ่มย่อ
+            zoomOutBtn.addEventListener('click', function () {
+                if (currentZoom > minZoom) {
+                    currentZoom -= zoomStep;
+                    updateZoomDisplay();
+                }
+            });
+
+            // ปุ่มรีเซ็ท
+            zoomResetBtn.addEventListener('click', function () {
+                currentZoom = 1;
+                updateZoomDisplay();
+                // เลื่อนกลับไปที่ด้านบนเมื่อรีเซ็ท
+                mindmap.scrollTo(0, 0);
+            });
+
+            // เพิ่มการซูมด้วยการเลื่อน mouse wheel + Ctrl
+            mindmap.addEventListener('wheel', function (e) {
+                if (e.ctrlKey) {
+                    e.preventDefault(); // ป้องกันการเลื่อนหน้าเว็บ
+
+                    // เก็บตำแหน่งเมาส์ในพื้นที่การทำงาน
+                    const rect = mindmap.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+
+                    // คำนวณตำแหน่งเมาส์เทียบกับเนื้อหาที่มีการเลื่อน
+                    const contentX = mouseX + mindmap.scrollLeft;
+                    const contentY = mouseY + mindmap.scrollTop;
+
+                    if (e.deltaY < 0 && currentZoom < maxZoom) {
+                        // ซูมเข้า
+                        currentZoom += zoomStep;
+                    } else if (e.deltaY > 0 && currentZoom > minZoom) {
+                        // ซูมออก
+                        currentZoom -= zoomStep;
+                    }
+
+                    updateZoomDisplay();
+                }
+            }, { passive: false });
+
+            // เพิ่มการรองรับการแตะสองนิ้วบนหน้าจอสัมผัส (pinch zoom)
+            let initialDistance = 0;
+            let initialZoom = 1;
+
+            mindmap.addEventListener('touchstart', function (e) {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+
+                    // คำนวณระยะห่างเริ่มต้นระหว่างนิ้วสองนิ้ว
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    initialDistance = Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+                    initialZoom = currentZoom;
+                }
+            }, { passive: false });
+
+            mindmap.addEventListener('touchmove', function (e) {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+
+                    // คำนวณระยะห่างปัจจุบันระหว่างนิ้วสองนิ้ว
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const currentDistance = Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+
+                    // คำนวณอัตราส่วนการเปลี่ยนแปลง
+                    const ratio = currentDistance / initialDistance;
+
+                    // ปรับระดับการซูม
+                    currentZoom = Math.min(Math.max(initialZoom * ratio, minZoom), maxZoom);
+                    updateZoomDisplay();
+                }
+            }, { passive: false });
+        });
+            // ฟังก์ชันออกจากระบบ
+            function logout() {
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: 'คุณต้องการออกจากระบบหรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // นำทางไปยังหน้า login.html
+                    window.location.href = "login.html";
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
