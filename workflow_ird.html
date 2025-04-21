@@ -413,31 +413,45 @@
             /* เปลี่ยนสีพื้นหลังเมื่อ hover */
         }
           /* เพิ่มสไตล์สำหรับปุ่มออกจากระบบ */
-          .logout-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: #dc3545; /* สีแดง */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
-            z-index: 1000;
-        }
+          /* เพิ่มสไตล์สำหรับปุ่มออกจากระบบและปุ่มแดชบอร์ด */
+    .logout-btn, .dashboard-btn {
+        position: fixed;
+        top: 20px;
+        padding: 10px 20px;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease;
+        z-index: 1000;
+    }
 
-        .logout-btn:hover {
-            background-color: #c82333; /* สีแดงเข้มเมื่อโฮเวอร์ */
-        }
+    .logout-btn {
+        left: 10px;
+        background-color: #dc3545; /* สีแดง */
+    }
+
+    .logout-btn:hover {
+        background-color: #c82333; /* สีแดงเข้มเมื่อโฮเวอร์ */
+    }
+
+    .dashboard-btn {
+        left: 150px; /* วางห่างจากปุ่ม logout */
+        background-color: #007bff; /* สีน้ำเงิน */
+    }
+
+    .dashboard-btn:hover {
+        background-color: #0069d9; /* สีน้ำเงินเข้มเมื่อโฮเวอร์ */
+    }
     </style>
 </head>
 
 <body>
     <!-- เพิ่มปุ่มออกจากระบบ -->
     <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
+    <a href="https://lookerstudio.google.com/reporting/ad9f0af7-49e9-4400-9a05-7e3d5acdadd1" target="_blank" class="dashboard-btn">แดชบอร์ดการอัพเดท</a>
     <div class="mindmap-container" id="mindmap">
 
         <h1 class="main-title">แผนภาพเพื่อการบริหารจัดการองค์กร<br>สถาบันวิจัยและพัฒนา มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน
@@ -623,8 +637,7 @@
                 </div>
                 <div class="branch-content">
                     <div class="branch-item has-subtopics">
-                        <a href="https://app.powerbi.com/view?r=eyJrIjoiZDQ0YTc0YTgtMzllNi00MzEzLTgyOGMtMjYxOWJhY2MzMTc5IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
-                            target="_blank" class="branch-link">แผนกงานบริการวิชาการ</a>
+                        แผนกงานบริการวิชาการ
                         <div class="subtopic-toggle">+</div>
                         <div class="subtopics">
                             <div class="subtopic-item">งานสารบรรณระดับงาน , งานฝึกอบรม(อยู่ระหว่างดำเนินการ)</div>
@@ -638,7 +651,8 @@
                         แผนกงานถ่ายทอดเทคโนโลยี
                         <div class="subtopic-toggle">+</div>
                         <div class="subtopics">
-                            <div class="subtopic-item">งารคลินิกเทคโนโลยี(อยู่ระหว่างดำเนินการ)</div>
+                            <div class="subtopic-item"><a href="https://app.powerbi.com/view?r=eyJrIjoiZDQ0YTc0YTgtMzllNi00MzEzLTgyOGMtMjYxOWJhY2MzMTc5IiwidCI6IjczM2UyY2UwLWNlMjgtNGRmYS04YWY2LWFkNTdiMzcwOTBjZSIsImMiOjEwfQ%3D%3D"
+                                target="_blank" class="branch-link">งารคลินิกเทคโนโลยี</a></div>
                             <div class="subtopic-item">งานชุมชนนวัตกรรม(อยู่ระหว่างดำเนินการ)</div>
 
                         </div>
