@@ -445,6 +445,10 @@
     .dashboard-btn:hover {
         background-color: #0069d9; /* สีน้ำเงินเข้มเมื่อโฮเวอร์ */
     }
+        .subtopic-item.has-subtopics {
+    cursor: pointer;
+}
+
     </style>
 </head>
 
@@ -636,13 +640,15 @@
                     งานบริการวิชาการ
                     <div class="subtopic-toggle">+</div>
                     <div class="subtopics">
-                         <div class="subtopic-item has-subtopics">
-            โครงการตามพันธกิจ
-            <div class="subtopic-toggle">+</div>
-            <div class="subtopics">
-                <div class="subtopic-item">ยุวชนอาสา</div>
-                <div class="subtopic-item">U2T</div>
-            </div>
+                        <div class="subtopic-item has-subtopics toggle-trigger">
+    โครงการตามพันธกิจ
+    <div class="subtopic-toggle">+</div>
+    <div class="subtopics">
+        <div class="subtopic-item">ยุวชนอาสา</div>
+        <div class="subtopic-item">U2T</div>
+    </div>
+</div>
+
         </div>
                         <div class="subtopic-item"><a href="https://lookerstudio.google.com/embed/reporting/f0ace3f9-2a21-4fbc-9f39-982e596fb7d6/page/p_yx5kes5znd" 
                        target="_blank" class="branch-link">คลินิกเทคโนโลยี</a></div>
@@ -714,14 +720,25 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // ฟังก์ชัน subtopics
-            const toggles = document.querySelectorAll('.subtopic-toggle');
-            toggles.forEach(toggle => {
-                toggle.addEventListener('click', function () {
-                    const subtopics = this.nextElementSibling;
-                    this.classList.toggle('active');
-                    subtopics.classList.toggle('active');
-                });
-            });
+     const toggleTriggers = document.querySelectorAll('.subtopic-item.has-subtopics');
+
+toggleTriggers.forEach(trigger => {
+    trigger.addEventListener('click', function (e) {
+        // ป้องกันไม่ให้ event ลามไปยัง parent ที่อยู่ใน toggle
+        e.stopPropagation();
+
+        const subtopic = this.querySelector('.subtopics');
+        const toggleIcon = this.querySelector('.subtopic-toggle');
+
+        if (subtopic) {
+            subtopic.classList.toggle('active');
+        }
+        if (toggleIcon) {
+            toggleIcon.classList.toggle('active');
+        }
+    });
+});
+
 
             // ฟังก์ชัน zoom ปรับปรุงให้ซูมจากตรงกลาง
             const mindmap = document.getElementById('mindmap');
